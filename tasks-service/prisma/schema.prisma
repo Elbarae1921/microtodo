@@ -1,0 +1,40 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../node_modules/.prisma/client"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model tasks {
+  id          String    @id @default(uuid())
+  title       String
+  description String
+  created_at  DateTime  @default(now())
+  updated_at  DateTime  @updatedAt
+  deleted_at  DateTime?
+  status      String
+  assignee_id String?
+  assignee    users?     @relation(fields: [assignee_id], references: [id])
+
+  @@index([id])
+  @@index([assignee_id])
+  @@index([status])
+}
+
+// this table already exists in a different microservice, so we only need to reference it
+model users {
+  id String @id @default(uuid())
+
+  tasks tasks[]
+
+  @@index([id])
+}

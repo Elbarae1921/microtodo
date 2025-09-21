@@ -1,0 +1,22 @@
+services:
+  postgres:
+    image: postgres:15
+    container_name: microtodo_notifications_postgres
+    restart: always
+    ports:
+      - 5434:5432
+    environment:
+      POSTGRES_USER: notifications
+      POSTGRES_PASSWORD: notifications
+      POSTGRES_DB: notifications
+    volumes:
+      - microtodo_notifications_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U notifications"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  microtodo_notifications_pgdata:
+    driver: local
